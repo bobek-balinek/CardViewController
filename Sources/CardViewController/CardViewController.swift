@@ -17,7 +17,7 @@ open class CardViewController: UIViewController, UIViewControllerTransitioningDe
     open var closeButton = UIButton()
     open var titleLabel = UILabel()
 
-    convenience init(size: SizeConfiguration) {
+    public convenience init(size: SizeConfiguration) {
         self.init()
 
         self.sizeConfiguration = size
@@ -35,7 +35,7 @@ open class CardViewController: UIViewController, UIViewControllerTransitioningDe
         setUpLabelsAndConstraints()
     }
 
-    func embed(_ viewController: UIViewController) {
+    open func embed(_ viewController: UIViewController) {
         viewController.willMove(toParent: self)
         addChild(viewController)
         viewController.didMove(toParent: self)
@@ -51,7 +51,7 @@ open class CardViewController: UIViewController, UIViewControllerTransitioningDe
         ])
     }
 
-    func setTitle(_ text: String?, color: UIColor) {
+    open func setTitle(_ text: String?, color: UIColor) {
         titleLabel.text = text
         titleLabel.textColor = color
     }
@@ -77,7 +77,10 @@ open class CardViewController: UIViewController, UIViewControllerTransitioningDe
         footerActionsStackView.addArrangedSubview(btn)
         btn.setTitle(title, for: .normal)
         btn.backgroundColor = btn.tintColor
-        btn.setTitleColor(view.tintColor.withAlphaComponent(0.4), for: .highlighted)
+        btn.setTitleColor(titleLabel.textColor, for: .normal)
+        btn.setTitleColor(titleLabel.textColor.withAlphaComponent(0.4), for: .highlighted)
+        btn.layer.cornerRadius = 20
+        btn.layer.masksToBounds = true
     }
 
     open func setSecondaryAction(_ title: String, _ action: @escaping ActionHandler) {
@@ -88,6 +91,8 @@ open class CardViewController: UIViewController, UIViewControllerTransitioningDe
         btn.setTitle(title, for: .normal)
         btn.addTarget(self, action: #selector(didPressButton(_:)), for: .touchUpInside)
         footerActionsStackView.addArrangedSubview(btn)
+        btn.layer.cornerRadius = 20
+        btn.layer.masksToBounds = true
     }
 
     @objc func didPressButton(_ sender: UIButton) {
@@ -109,6 +114,9 @@ open class CardViewController: UIViewController, UIViewControllerTransitioningDe
         view.addSubview(footerView)
         footerView.addSubview(footerActionsStackView)
 
+        titleLabel.font = UIFont.preferredFont(forTextStyle: .title3)
+        titleLabel.textAlignment = .center
+
         containerView.translatesAutoresizingMaskIntoConstraints = false
         headerView.translatesAutoresizingMaskIntoConstraints = false
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -123,7 +131,11 @@ open class CardViewController: UIViewController, UIViewControllerTransitioningDe
         headerView.layoutMargins = sizeConfiguration.viewPadding
         footerView.layoutMargins = sizeConfiguration.viewPadding
 
-        closeButton.setImage(UIImage(named: "xmark.circle.fill")?.withRenderingMode(.alwaysTemplate), for: .normal)
+        if #available(iOS 13.0, *) {
+            closeButton.setImage(UIImage(systemName: "xmark.circle.fill"), for: .normal)
+        } else {
+            closeButton.setTitle("Close", for: .normal)
+        }
         closeButton.addTarget(self, action: #selector(didPressClose), for: .touchUpInside)
 
         containerView.setContentHuggingPriority(.init(rawValue: 251), for: .vertical)

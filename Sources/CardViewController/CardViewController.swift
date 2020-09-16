@@ -71,28 +71,38 @@ open class CardViewController: UIViewController, UIViewControllerTransitioningDe
     open func setPrimaryAction(_ title: String, _ action: @escaping ActionHandler) {
         let index: Int = 0
         self.actions.updateValue(action, forKey: index)
-        let btn = UIButton(type: .system)
-        btn.tag = index
-        btn.addTarget(self, action: #selector(didPressButton(_:)), for: .touchUpInside)
-        footerActionsStackView.addArrangedSubview(btn)
-        btn.setTitle(title, for: .normal)
-        btn.backgroundColor = btn.tintColor
-        btn.setTitleColor(titleLabel.textColor, for: .normal)
-        btn.setTitleColor(titleLabel.textColor.withAlphaComponent(0.4), for: .highlighted)
-        btn.layer.cornerRadius = 20
-        btn.layer.masksToBounds = true
+        guard let existingBtn = footerActionsStackView.arrangedSubviews.first(where: { $0.tag == index }) as? UIButton else {
+            let btn = UIButton(type: .system)
+            btn.tag = index
+            btn.addTarget(self, action: #selector(didPressButton(_:)), for: .touchUpInside)
+            footerActionsStackView.addArrangedSubview(btn)
+            btn.setTitle(title, for: .normal)
+            btn.backgroundColor = btn.tintColor
+            btn.setTitleColor(titleLabel.textColor, for: .normal)
+            btn.setTitleColor(titleLabel.textColor.withAlphaComponent(0.4), for: .highlighted)
+            btn.layer.cornerRadius = 20
+            btn.layer.masksToBounds = true
+            return
+        }
+
+        existingBtn.setTitle(title, for: .normal)
     }
 
     open func setSecondaryAction(_ title: String, _ action: @escaping ActionHandler) {
         let index: Int = 1
         self.actions.updateValue(action, forKey: index)
-        let btn = UIButton(type: .system)
-        btn.tag = index
-        btn.setTitle(title, for: .normal)
-        btn.addTarget(self, action: #selector(didPressButton(_:)), for: .touchUpInside)
-        footerActionsStackView.addArrangedSubview(btn)
-        btn.layer.cornerRadius = 20
-        btn.layer.masksToBounds = true
+        guard let existingBtn = footerActionsStackView.arrangedSubviews.first(where: { $0.tag == index }) as? UIButton else {
+            let btn = UIButton(type: .system)
+            btn.tag = index
+            btn.setTitle(title, for: .normal)
+            btn.addTarget(self, action: #selector(didPressButton(_:)), for: .touchUpInside)
+            footerActionsStackView.addArrangedSubview(btn)
+            btn.layer.cornerRadius = 20
+            btn.layer.masksToBounds = true
+            return
+        }
+
+        existingBtn.setTitle(title, for: .normal)
     }
 
     @objc func didPressButton(_ sender: UIButton) {
